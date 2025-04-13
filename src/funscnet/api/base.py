@@ -23,6 +23,7 @@ class ApiBase:
         base_url: str = DEFAULT_BASE_URL,
         api_version: str = API_VERSION,
         module: str = None,
+        token: str = None,
     ):
         """
         初始化API基类
@@ -35,7 +36,7 @@ class ApiBase:
         self.base_url = base_url.rstrip("/")
         self.api_version = api_version
         self.module = module
-        self.token = None
+        self.token = token
 
     def _get_endpoint(self, uri: str) -> str:
         """
