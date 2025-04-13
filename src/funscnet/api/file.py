@@ -56,8 +56,7 @@ class ScNetFileAPI(ApiBase):
         if path:
             params["path"] = path
         logger.info(f"正在获取文件列表，路径: {path}")
-        response = self.request(uri="list", method="get", params=params)
-        return self._process_response(response, "获取文件列表失败")
+        return self.request(uri="list", method="get", params=params)
 
     def upload_file(
         self, file_path: str, remote_dir: str, cover: str = "uncover"
@@ -86,8 +85,7 @@ class ScNetFileAPI(ApiBase):
             files = {"file": (file_name, f, "application/octet-stream")}
             data = {"cover": cover, "path": remote_dir}
             logger.info(f"正在上传文件 {file_name} 到 {remote_dir}")
-            response = self.request(uri="upload", method="post", data=data, files=files)
-            return self._process_response(response, "上传文件失败")
+            return self.request(uri="upload", method="post", data=data, files=files)
 
     def download_file(
         self, path: str, save_path: Optional[str] = None
@@ -119,7 +117,6 @@ class ScNetFileAPI(ApiBase):
             params=params,
             stream=True,  # 流式下载，适合大文件
         )
-        response = self._process_response(response, "下载文件失败")
 
         # 如果没有指定保存路径，直接返回文件内容
         if save_path is None:
@@ -156,6 +153,5 @@ class ScNetFileAPI(ApiBase):
         """
         params = {"paths": ",".join(paths)}
         logger.info(f"正在检查文件下载权限，路径: {paths}")
-        response = self.request(uri="download-check", method="get", params=params)
-        self._process_response(response, "文件下载校验失败")
+        self.request(uri="download-check", method="get", params=params)
         return True
