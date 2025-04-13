@@ -1,6 +1,6 @@
 [project]
 name = "funscnet"
-version = "1.0.1"
+version = "1.0.2"
 description = "funscnet"
 readme = "README.md"
 requires-python = ">=3.8"

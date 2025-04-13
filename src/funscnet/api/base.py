@@ -7,7 +7,7 @@ from urllib.parse import urljoin
 import requests
 from funutil import getLogger
 
-from .constant import ApiConstants, ApiException
+from funscnet.api.constant import ApiConstants, ApiException
 
 logger = getLogger("funscnet")
 
@@ -16,7 +16,7 @@ class ApiBase:
     """API基类，提供通用方法"""
 
     API_VERSION = "v2"
-    DEFAULT_BASE_URL = "https://scnet-demo.accloud.cn"
+    DEFAULT_BASE_URL = "https://www.scnet.cn"
 
     def __init__(
         self,
@@ -35,6 +35,7 @@ class ApiBase:
         self.base_url = base_url.rstrip("/")
         self.api_version = api_version
         self.module = module
+        self.token = None
 
     def _get_endpoint(self, uri: str) -> str:
         """
@@ -125,3 +126,12 @@ class ApiBase:
         except Exception as e:
             logger.error(f"未知错误: {str(e)}")
             raise ApiException(f"未知错误: {str(e)}", response=response)
+
+    def request(self, uri, method="post", headers=None, data=None, *args, **kwargs):
+        headers = headers or {}
+        headers["token"] = self.token
+        endpoint = self._get_endpoint(uri)
+        response = requests.request(
+            method, endpoint, headers=headers, data=data, *args, **kwargs
+        )
+        return self._process_response(response, "上传文件失败")
