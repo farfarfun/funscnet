@@ -130,7 +130,7 @@ class ApiBase:
 
     def request(self, uri, method="post", headers=None, data=None, *args, **kwargs):
         headers = headers or {}
-        headers["token"] = self.token
+        headers.update({"Content-Type": "application/json", "token": self.token})
         endpoint = self._get_endpoint(uri)
         response = requests.request(
             method, endpoint, headers=headers, data=data, *args, **kwargs
