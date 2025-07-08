@@ -56,7 +56,7 @@ class ScNetFileAPI(ApiBase):
         if path:
             params["path"] = path
         logger.info(f"正在获取文件列表，路径: {path}")
-        return self.request(uri="list", method="get", params=params)
+        return self.request(uri="file/list", method="get", params=params)
 
     def upload_file(
         self, file_path: str, remote_dir: str, cover: str = "uncover"

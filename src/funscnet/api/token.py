@@ -145,6 +145,6 @@ class ScNetTokenAPI(ApiBase):
 
         logger.info("正在获取授权区域信息")
 
-        endpoint = self._get_endpoint("center-info")
+        endpoint = self._get_endpoint("center")
         response = requests.get(endpoint, headers=headers)
         return self._process_response(response, "获取授权区域失败")
