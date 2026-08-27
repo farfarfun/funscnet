@@ -1,6 +1,6 @@
 [project]
 name = "funscnet"
-version = "1.0.6"
+version = "1.0.7"
 description = "funscnet"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -31,6 +31,10 @@ Releases = "https://github.com/farfarfun/funscnet/releases"
 
 [tool.setuptools]
 license-files = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
