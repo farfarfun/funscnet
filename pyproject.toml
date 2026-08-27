@@ -4,7 +4,10 @@ version = "1.0.6"
 description = "funscnet"
 readme = "README.md"
 requires-python = ">=3.8"
-dependencies = []
+dependencies = [
+    "requests",
+    "funutil",
+]
 [[project.authors]]
 name = "牛哥"
 email = "niuliangtao@qq.com"
@@ -28,3 +31,8 @@ Releases = "https://github.com/farfarfun/funscnet/releases"
 
 [tool.setuptools]
 license-files = []
+
+[dependency-groups]
+dev = [
+    "pytest",
+]
