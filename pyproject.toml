@@ -5,7 +5,7 @@ description = "funscnet"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "requests",
+    "requests>=2.33.0",
     "funutil",
 ]
 [[project.authors]]
@@ -38,5 +38,5 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
-    "pytest",
+    "pytest>=9.0.3",
 ]
