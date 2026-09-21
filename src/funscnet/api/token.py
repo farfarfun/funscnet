@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import json
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import requests
-from funutil import getLogger
+from farlog import getLogger
 
 from .base import ApiBase
 
@@ -27,7 +27,7 @@ class ScNetTokenAPI(ApiBase):
         """
         super().__init__(*args, module="auth", **kwargs)
 
-    def get_user_tokens(self, user: str, password: str, org_id: str) -> Dict[str, Any]:
+    def get_user_tokens(self, user: str, password: str, org_id: str) -> dict[str, Any]:
         """
         API文档: https://www.scnet.cn/ac/openapi/doc/2.0/api/safecertification/get-user-tokens.html
 
@@ -61,7 +61,7 @@ class ScNetTokenAPI(ApiBase):
 
     def get_cluster_tokens(
         self, user: str, password: str, org_id: str
-    ) -> List[Dict[str, str]]:
+    ) -> list[dict[str, str]]:
         """
         API文档: https://www.scnet.cn/ac/openapi/doc/2.0/api/safecertification/get-user-tokens.html
 
@@ -73,14 +73,14 @@ class ScNetTokenAPI(ApiBase):
             org_id: 组织ID
 
         Returns:
-            List[Dict]: 包含区域信息和token的列表，每个元素包含clusterName、clusterId和token
+            List[dict]: 包含区域信息和token的列表，每个元素包含clusterName、clusterId和token
         """
         result = self.get_user_tokens(user, password, org_id)
         return result.get("data", [])
 
     def get_token_by_cluster_id(
         self, user: str, password: str, org_id: str, cluster_id: str
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         API文档: https://www.scnet.cn/ac/openapi/doc/2.0/api/safecertification/get-user-tokens.html
 
@@ -93,7 +93,7 @@ class ScNetTokenAPI(ApiBase):
             cluster_id: 计算区域ID
 
         Returns:
-            Optional[str]: 如果指定区域存在且用户有权限，返回token字符串；否则返回None
+            str | None: 如果指定区域存在且用户有权限，返回token字符串；否则返回None
         """
         logger.info(f"正在获取集群 {cluster_id} 的token")
         clusters = self.get_cluster_tokens(user, password, org_id)
@@ -107,7 +107,7 @@ class ScNetTokenAPI(ApiBase):
 
     def get_platform_token(
         self, user: str, password: str, org_id: str
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         API文档: https://www.scnet.cn/ac/openapi/doc/2.0/api/safecertification/get-user-tokens.html
 
@@ -119,12 +119,12 @@ class ScNetTokenAPI(ApiBase):
             org_id: 组织ID
 
         Returns:
-            Optional[str]: 平台token字符串，如果不存在则返回None
+            str | None: 平台token字符串，如果不存在则返回None
         """
         logger.info("正在获取平台token")
         return self.get_token_by_cluster_id(user, password, org_id, "0")
 
-    def get_center_info(self, token: str) -> Dict[str, Any]:
+    def get_center_info(self, token: str) -> dict[str, Any]:
         """
         API文档: https://www.scnet.cn/ac/openapi/doc/2.0/api/safecertification/get-center-info.html
 

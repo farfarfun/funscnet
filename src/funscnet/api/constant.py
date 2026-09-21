@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from funutil import getLogger
+from farlog import getLogger
 
 logger = getLogger("funscnet")
 
@@ -13,7 +13,7 @@ class ApiException(Exception):
     def __init__(
         self,
         message: str,
-        error_code: str = None,
+        error_code: str | None = None,
         error_type: str = "api",
         response: Any = None,
     ):

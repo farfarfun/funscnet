@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import json
-from typing import Any, Dict
+from typing import Any
 from urllib.parse import urljoin
 
 import requests
-from funutil import getLogger
+from farlog import getLogger
 
 from funscnet.api.constant import ApiConstants, ApiException
 
@@ -22,8 +22,8 @@ class ApiBase:
         self,
         base_url: str = DEFAULT_BASE_URL,
         api_version: str = API_VERSION,
-        module: str = None,
-        token: str = None,
+        module: str | None = None,
+        token: str | None = None,
     ):
         """
         初始化API基类
@@ -67,7 +67,7 @@ class ApiBase:
 
     def _process_response(
         self, response: requests.Response, error_msg: str = "API请求失败"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         处理API响应
 
@@ -124,11 +124,13 @@ class ApiBase:
             raise ApiException(
                 f"响应解析失败，无效的JSON格式: {str(e)}", response=response
             )
+        except ApiException:
+            raise
         except Exception as e:
             logger.error(f"未知错误: {str(e)}")
             raise ApiException(f"未知错误: {str(e)}", response=response)
 
-    def request(self, uri, method="post", headers=None, data=None, *args, **kwargs):
+    def request(self, uri: str, method: str = "post", headers: dict[str, str] | None = None, data: Any = None, *args: Any, **kwargs: Any) -> dict[str, Any]:
         headers = headers or {}
         headers.update({"Content-Type": "application/json", "token": self.token})
         endpoint = self._get_endpoint(uri)

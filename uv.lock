@@ -196,11 +196,22 @@ wheels = [
 ]
 
 [[package]]
+name = "farlog"
+version = "1.1.8"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "loguru" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ef/33/20b1bc53d39fdabaf97be5604acdd68406a551c6cc090437ff84fc5fdcc0/farlog-1.1.8-py3-none-any.whl", hash = "sha256:03e3b8c9c76e676c41f2d24a95e59d4d5cfaf0c4b474f28c6ca76fd4860a71ca", size = 5075, upload-time = "2026-08-27T02:50:51.323Z" },
+]
+
+[[package]]
 name = "funscnet"
 version = "1.0.7"
 source = { editable = "." }
 dependencies = [
-    { name = "funutil" },
+    { name = "farlog" },
     { name = "requests" },
 ]
 
@@ -211,23 +222,12 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "funutil" },
+    { name = "farlog", specifier = ">=1.1.8" },
     { name = "requests", specifier = ">=2.33.0" },
 ]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pytest", specifier = ">=9.0.3" }]
-
-[[package]]
-name = "funutil"
-version = "1.0.63"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "nltlog" },
-]
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/de/ff/679f950dd5cea961b33c3ff5ecec1ddb425ddc5e0eb99247e48c53a27118/funutil-1.0.63-py3-none-any.whl", hash = "sha256:443d358b9373fb164312df7440c6fab882f39fe0c07c0e06584655fa06e9e5f0", size = 21935, upload-time = "2026-08-26T15:54:14.788Z" },
-]
 
 [[package]]
 name = "idna"
@@ -258,17 +258,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/3a/05/a1dae3dffd1116099471c643b8924f5aa6524411dc6c63fdae648c4f1aca/loguru-0.7.3.tar.gz", hash = "sha256:19480589e77d47b8d85b2c827ad95d49bf31b0dcde16593892eb51dd18706eb6", size = 63559, upload-time = "2024-12-06T11:20:56.608Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/0c/29/0348de65b8cc732daa3e33e67806420b2ae89bdce2b04af740289c5c6c8c/loguru-0.7.3-py3-none-any.whl", hash = "sha256:31a33c10c8e1e10422bfd431aeb5d351c7cf7fa671e3c4df004162264b28220c", size = 61595, upload-time = "2024-12-06T11:20:54.538Z" },
-]
-
-[[package]]
-name = "nltlog"
-version = "1.1.6"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "loguru" },
-]
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/fb/5a/03c191b427546e1743dfaad81e36569d8bdf4ecf0de39fe12eb8d684091f/nltlog-1.1.6-py3-none-any.whl", hash = "sha256:3d69b26847f88ebf188c71d797fd73a60d249d3224f8b6731fec64e642d3459f", size = 5056, upload-time = "2026-08-03T02:43:02.75Z" },
 ]
 
 [[package]]

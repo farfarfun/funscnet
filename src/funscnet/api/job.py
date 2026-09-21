@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from typing import Any, Dict
+from typing import Any
 
-from funutil import getLogger
+from farlog import getLogger
 
 from funscnet.api.base import ApiBase
 
@@ -25,7 +25,7 @@ class ScNetJobAPI(ApiBase):
         """
         super().__init__(*args, module="job", **kwargs)
 
-    def get_cluster_info(self) -> Dict[str, Any]:
+    def get_cluster_info(self) -> dict[str, Any]:
         """
         API文档: https://www.scnet.cn/ac/openapi/doc/2.0/api/jobmanager/list-cluster.html
 
@@ -43,7 +43,7 @@ class ScNetJobAPI(ApiBase):
         """
         return self.request(uri="cluster", method="get")
 
-    def get_user_queues(self, scheduler_id: str) -> Dict[str, Any]:
+    def get_user_queues(self, scheduler_id: str) -> dict[str, Any]:
         """
         API文档: https://www.scnet.cn/ac/openapi/doc/2.0/api/jobmanager/query-user-queue.html
 
@@ -63,7 +63,7 @@ class ScNetJobAPI(ApiBase):
         response = self.request(uri="scheduler-user/queue", method="get", params=params)
         return self._process_response(response, "获取用户队列失败")
 
-    def submit_job(self, scheduler_id: str, job_data: Dict[str, Any]) -> Dict[str, Any]:
+    def submit_job(self, scheduler_id: str, job_data: dict[str, Any]) -> dict[str, Any]:
         """
         API文档: https://www.scnet.cn/ac/openapi/doc/2.0/api/jobmanager/job.html
 
@@ -85,7 +85,7 @@ class ScNetJobAPI(ApiBase):
         logger.info(f"正在提交作业，调度器ID: {scheduler_id}")
         return self.request(uri="job", method="get", json=job_data)
 
-    def get_job_detail(self, job_id: str, scheduler_id: str) -> Dict[str, Any]:
+    def get_job_detail(self, job_id: str, scheduler_id: str) -> dict[str, Any]:
         """
         API文档: https://www.scnet.cn/ac/openapi/doc/2.0/api/jobmanager/query-job-detail.html
 

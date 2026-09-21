@@ -135,14 +135,7 @@ def test_api_exception_fields():
 
 
 def test_api_base_process_response_raises_on_business_error():
-    """
-    已知问题（未修复，仅记录）：ApiBase._process_response 在 try 块内部主动
-    raise ApiException 之后，会被同一个 try 块末尾的 `except Exception as e`
-    重新捕获，并包装成一个新的、丢失了 error_code/error_type 的 ApiException
-    （见 src/funscnet/api/base.py 中 `raise ApiException(...)` 之后紧跟的
-    `except Exception` 分支）。这是业务逻辑缺陷，不在本次轻量冒烟测试的修复范围内，
-    这里只验证“确实会抛出 ApiException”这一基本行为，不对 error_code 做强断言。
-    """
+    """业务错误应保留服务端错误码和错误类型。"""
     from funscnet import ApiBase, ApiException
 
     api = ApiBase(module="job")
@@ -154,9 +147,8 @@ def test_api_base_process_response_raises_on_business_error():
 
     with pytest.raises(ApiException) as excinfo:
         api._process_response(fake_response)
-    # 预期行为应为 excinfo.value.error_code == "10001"，但由于上述已知 bug，
-    # error_code 实际被置为 None。这里断言的是当前（有缺陷的）真实行为。
-    assert excinfo.value.error_code is None
+    assert excinfo.value.error_code == "10001"
+    assert excinfo.value.error_type == "auth"
     assert "10001" in str(excinfo.value)
 
 

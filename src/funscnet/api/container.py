@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 
-from typing import Any, Dict, List
+from typing import Any
 
 import requests
-from funutil import getLogger
+from farlog import getLogger
 
 from .base import ApiBase
 
@@ -29,7 +29,7 @@ class ScNetContainerAPI(ApiBase):
 
     def get_resources(
         self, token: str, resource_group: str = None, accelerator_type: str = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         API文档: https://www.scnet.cn/ac/openapi/doc/2.0/api/container/resources.html
 
@@ -62,7 +62,7 @@ class ScNetContainerAPI(ApiBase):
         response = requests.get(endpoint, headers=headers, params=params)
         return self._process_response(response, "获取节点资源限额失败")
 
-    def get_resource_groups(self, token: str) -> Dict[str, Any]:
+    def get_resource_groups(self, token: str) -> dict[str, Any]:
         """
         API文档: https://www.scnet.cn/ac/openapi/doc/2.0/api/container/group.html
 
@@ -86,8 +86,8 @@ class ScNetContainerAPI(ApiBase):
         return self._process_response(response, "获取资源分组失败")
 
     def create_container(
-        self, token: str, container_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, token: str, container_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         API文档: https://www.scnet.cn/ac/openapi/doc/2.0/api/container/create.html
 
@@ -111,7 +111,7 @@ class ScNetContainerAPI(ApiBase):
         response = requests.post(endpoint, headers=headers, json=container_data)
         return self._process_response(response, "创建容器实例失败")
 
-    def get_container_detail(self, token: str, instance_id: str) -> Dict[str, Any]:
+    def get_container_detail(self, token: str, instance_id: str) -> dict[str, Any]:
         """
         API文档: https://www.scnet.cn/ac/openapi/doc/2.0/api/container/detail.html
 
@@ -138,8 +138,8 @@ class ScNetContainerAPI(ApiBase):
         return self._process_response(response, "获取容器实例详情失败")
 
     def execute_script(
-        self, token: str, instance_ids: List[str], script: str
-    ) -> Dict[str, Any]:
+        self, token: str, instance_ids: list[str], script: str
+    ) -> dict[str, Any]:
         """
         API文档: https://www.scnet.cn/ac/openapi/doc/2.0/api/container/execute.html
 
@@ -166,7 +166,7 @@ class ScNetContainerAPI(ApiBase):
         response = requests.post(endpoint, headers=headers, json=data)
         return self._process_response(response, "执行脚本失败")
 
-    def delete_containers(self, token: str, instance_ids: List[str]) -> Dict[str, Any]:
+    def delete_containers(self, token: str, instance_ids: list[str]) -> dict[str, Any]:
         """
         API文档: https://www.scnet.cn/ac/openapi/doc/2.0/api/container/delete.html
 

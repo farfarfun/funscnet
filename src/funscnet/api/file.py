@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import os
-from typing import Any, BinaryIO, Dict, List, Optional, Union
+from typing import Any, BinaryIO
 
-from funutil import getLogger
+from farlog import getLogger
 
 from funscnet.api.base import ApiBase
 
@@ -33,7 +33,7 @@ class ScNetFileAPI(ApiBase):
         start: int = 0,
         order: str = "asc",
         order_by: str = "name",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         API文档: https://www.scnet.cn/ac/openapi/doc/2.0/api/efile/list.html
 
@@ -60,7 +60,7 @@ class ScNetFileAPI(ApiBase):
 
     def upload_file(
         self, file_path: str, remote_dir: str, cover: str = "uncover"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         API文档: https://www.scnet.cn/ac/openapi/doc/2.0/api/efile/upload.html
 
@@ -88,8 +88,8 @@ class ScNetFileAPI(ApiBase):
             return self.request(uri="upload", method="post", data=data, files=files)
 
     def download_file(
-        self, path: str, save_path: Optional[str] = None
-    ) -> Union[BinaryIO, str]:
+        self, path: str, save_path: str | None = None
+    ) -> BinaryIO | str:
         """
         API文档: https://www.scnet.cn/ac/openapi/doc/2.0/api/efile/download.html
 
@@ -103,7 +103,7 @@ class ScNetFileAPI(ApiBase):
             save_path: 保存文件的本地路径，如果为None则返回文件内容
 
         Returns:
-            Union[BinaryIO, str]: 如果save_path为None，返回文件内容；否则返回保存的文件路径
+            BinaryIO | str: 如果save_path为None，返回文件内容；否则返回保存的文件路径
 
         Raises:
             ApiException: API异常
@@ -134,7 +134,7 @@ class ScNetFileAPI(ApiBase):
         logger.info(f"文件已保存至: {save_path}")
         return save_path
 
-    def download_check(self, paths: List[str]) -> bool:
+    def download_check(self, paths: list[str]) -> bool:
         """
         API文档: https://www.scnet.cn/ac/openapi/doc/2.0/api/efile/download-check.html
 
