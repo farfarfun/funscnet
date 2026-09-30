@@ -1,9 +1,5 @@
-# -*- coding: utf-8 -*-
-
-
 from typing import Any
 
-import requests
 from farlog import getLogger
 
 from .base import ApiBase
@@ -17,18 +13,27 @@ class ScNetContainerAPI(ApiBase):
     用于查询节点资源限额、创建容器实例和查询容器详情等操作
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        base_url: str = ApiBase.DEFAULT_BASE_URL,
+        api_version: str = ApiBase.API_VERSION,
+        token: str | None = None,
+    ) -> None:
         """
         初始化容器管理API客户端
 
         Args:
             base_url: API基础URL，默认为示例环境URL
             api_version: API版本，默认为v2
+            token: 默认访问令牌
         """
-        super().__init__(*args, module="container", **kwargs)
+        super().__init__(base_url, api_version, module="container", token=token)
 
     def get_resources(
-        self, token: str, resource_group: str = None, accelerator_type: str = None
+        self,
+        token: str,
+        resource_group: str | None = None,
+        accelerator_type: str | None = None,
     ) -> dict[str, Any]:
         """
         API文档: https://www.scnet.cn/ac/openapi/doc/2.0/api/container/resources.html
@@ -55,12 +60,17 @@ class ScNetContainerAPI(ApiBase):
             params["acceleratorType"] = accelerator_type
 
         logger.info(
-            f"正在获取节点资源限额，资源组: {resource_group}, 加速器类型: {accelerator_type}"
+            "正在获取节点资源限额，资源组={}，加速器类型={}",
+            resource_group,
+            accelerator_type,
         )
-
-        endpoint = self._get_endpoint("instance-service/resources")
-        response = requests.get(endpoint, headers=headers, params=params)
-        return self._process_response(response, "获取节点资源限额失败")
+        return self.request(
+            "instance-service/resources",
+            method="get",
+            headers=headers,
+            params=params,
+            operation="获取节点资源限额",
+        )
 
     def get_resource_groups(self, token: str) -> dict[str, Any]:
         """
@@ -81,9 +91,12 @@ class ScNetContainerAPI(ApiBase):
 
         logger.info("正在获取资源分组")
 
-        endpoint = self._get_endpoint("instance-service/resource-group")
-        response = requests.get(endpoint, headers=headers)
-        return self._process_response(response, "获取资源分组失败")
+        return self.request(
+            "instance-service/resource-group",
+            method="get",
+            headers=headers,
+            operation="获取资源分组",
+        )
 
     def create_container(
         self, token: str, container_data: dict[str, Any]
@@ -107,9 +120,12 @@ class ScNetContainerAPI(ApiBase):
 
         logger.info("正在创建容器实例")
 
-        endpoint = self._get_endpoint("instance-service/instance/create")
-        response = requests.post(endpoint, headers=headers, json=container_data)
-        return self._process_response(response, "创建容器实例失败")
+        return self.request(
+            "instance-service/instance/create",
+            headers=headers,
+            json=container_data,
+            operation="创建容器实例",
+        )
 
     def get_container_detail(self, token: str, instance_id: str) -> dict[str, Any]:
         """
@@ -131,11 +147,14 @@ class ScNetContainerAPI(ApiBase):
 
         params = {"instanceId": instance_id}
 
-        logger.info(f"正在获取容器实例 {instance_id} 详情")
-
-        endpoint = self._get_endpoint("instance-service/instance/detail")
-        response = requests.get(endpoint, headers=headers, params=params)
-        return self._process_response(response, "获取容器实例详情失败")
+        logger.info("正在获取容器实例 {} 详情", instance_id)
+        return self.request(
+            "instance-service/instance/detail",
+            method="get",
+            headers=headers,
+            params=params,
+            operation="获取容器实例详情",
+        )
 
     def execute_script(
         self, token: str, instance_ids: list[str], script: str
@@ -160,11 +179,13 @@ class ScNetContainerAPI(ApiBase):
 
         data = {"instanceIds": instance_ids, "script": script}
 
-        logger.info(f"正在执行脚本，实例ID列表: {instance_ids}")
-
-        endpoint = self._get_endpoint("instance-service/instance/execute")
-        response = requests.post(endpoint, headers=headers, json=data)
-        return self._process_response(response, "执行脚本失败")
+        logger.info("正在执行脚本，实例 ID 列表={}", instance_ids)
+        return self.request(
+            "instance-service/instance/execute",
+            headers=headers,
+            json=data,
+            operation="执行容器脚本",
+        )
 
     def delete_containers(self, token: str, instance_ids: list[str]) -> dict[str, Any]:
         """
@@ -186,8 +207,10 @@ class ScNetContainerAPI(ApiBase):
 
         data = {"instanceIds": instance_ids}
 
-        logger.info(f"正在删除容器实例，实例ID列表: {instance_ids}")
-
-        endpoint = self._get_endpoint("instance-service/instance/delete")
-        response = requests.post(endpoint, headers=headers, json=data)
-        return self._process_response(response, "删除容器实例失败")
+        logger.info("正在删除容器实例，实例 ID 列表={}", instance_ids)
+        return self.request(
+            "instance-service/instance/delete",
+            headers=headers,
+            json=data,
+            operation="删除容器实例",
+        )

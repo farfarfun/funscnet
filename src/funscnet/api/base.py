@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import json
 from typing import Any
 from urllib.parse import urljoin
@@ -24,7 +22,7 @@ class ApiBase:
         api_version: str = API_VERSION,
         module: str | None = None,
         token: str | None = None,
-    ):
+    ) -> None:
         """
         初始化API基类
 
@@ -32,6 +30,7 @@ class ApiBase:
             base_url: API基础URL
             api_version: API版本，默认为v2
             module: API模块
+            token: 默认访问令牌
         """
         self.base_url = base_url.rstrip("/")
         self.api_version = api_version
@@ -100,41 +99,69 @@ class ApiBase:
                     )
                     error_msg = f"{error_msg}: {result.get('msg', error_detail)} (错误码: {error_code})"
 
-                    logger.error(f"API错误: {error_msg}")
+                    logger.error("API错误：{}", error_msg)
 
                     raise ApiException(error_msg, error_code, error_type, result)
 
                 return result
             return {"code": ApiConstants.CODE_SUCCESS, "data": response}
 
-        except requests.HTTPError as e:
+        except requests.HTTPError as exc:
             status_code = str(response.status_code)
-            error_detail = ApiConstants.ERROR_CODES.get(
-                status_code, f"HTTP错误: {str(e)}"
-            )
+            error_detail = ApiConstants.ERROR_CODES.get(status_code, f"HTTP错误: {exc}")
             error_type = "auth" if status_code in ["401", "403"] else "api"
             error_msg = f"{error_msg}: {error_detail} (状态码: {status_code})"
 
-            logger.error(error_msg)
+            logger.error("{}", error_msg)
 
-            raise ApiException(error_msg, status_code, error_type, response)
+            raise ApiException(error_msg, status_code, error_type, response) from exc
 
-        except json.JSONDecodeError as e:
-            logger.error(f"JSON解析错误: {str(e)}")
+        except json.JSONDecodeError as exc:
+            logger.error("JSON解析错误：{}", exc)
             raise ApiException(
-                f"响应解析失败，无效的JSON格式: {str(e)}", response=response
-            )
+                f"{error_msg}: 响应不是有效 JSON: {exc}", response=response
+            ) from exc
         except ApiException:
             raise
-        except Exception as e:
-            logger.error(f"未知错误: {str(e)}")
-            raise ApiException(f"未知错误: {str(e)}", response=response)
 
-    def request(self, uri: str, method: str = "post", headers: dict[str, str] | None = None, data: Any = None, *args: Any, **kwargs: Any) -> dict[str, Any]:
-        headers = headers or {}
-        headers.update({"Content-Type": "application/json", "token": self.token})
+    def request(
+        self,
+        uri: str,
+        method: str = "post",
+        headers: dict[str, str] | None = None,
+        data: Any = None,
+        operation: str = "API 请求",
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        """发送 HTTP 请求，并按统一协议处理响应和错误上下文。
+
+        Args:
+            uri: API 相对路径。
+            method: HTTP 方法。
+            headers: 附加请求头。
+            data: 请求体数据。
+            operation: 用于错误消息的当前操作名称。
+            **kwargs: 传给 requests 的受支持关键字参数。
+
+        Returns:
+            已解析的业务响应；二进制响应放在 ``data`` 字段中。
+
+        Raises:
+            ApiException: 网络、HTTP、JSON 或业务响应失败。
+        """
+        request_headers = dict(headers or {})
+        if "files" not in kwargs:
+            request_headers.setdefault("Content-Type", "application/json")
+        if self.token:
+            request_headers.setdefault("token", self.token)
+        kwargs.setdefault("timeout", 30)
         endpoint = self._get_endpoint(uri)
-        response = requests.request(
-            method, endpoint, headers=headers, data=data, *args, **kwargs
-        )
-        return self._process_response(response, "上传文件失败")
+        try:
+            response = requests.request(
+                method, endpoint, headers=request_headers, data=data, **kwargs
+            )
+        except requests.RequestException as exc:
+            message = f"{operation}失败: {exc}"
+            logger.error("{}", message)
+            raise ApiException(message, response=exc.response) from exc
+        return self._process_response(response, f"{operation}失败")

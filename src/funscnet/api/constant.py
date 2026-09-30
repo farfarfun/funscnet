@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-
-from typing import Any
+from typing import Any, ClassVar
 
 from farlog import getLogger
 
@@ -16,7 +14,15 @@ class ApiException(Exception):
         error_code: str | None = None,
         error_type: str = "api",
         response: Any = None,
-    ):
+    ) -> None:
+        """保存 API 错误上下文。
+
+        Args:
+            message: 可读错误消息。
+            error_code: 服务端或 HTTP 错误码。
+            error_type: 错误分类。
+            response: 原始响应或业务响应数据。
+        """
         self.message = message
         self.error_code = error_code
         self.error_type = error_type  # 可以是 "auth", "resource", "api" 等
@@ -31,7 +37,7 @@ class ApiConstants:
     CODE_SUCCESS = "0"
 
     # 错误码映射
-    ERROR_CODES = {
+    ERROR_CODES: ClassVar[dict[str, str]] = {
         # 通用错误码
         "0": "成功",
         "-1": "系统内部错误",

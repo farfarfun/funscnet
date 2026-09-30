@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from typing import Any
 
 from farlog import getLogger
@@ -15,15 +13,21 @@ class ScNetJobAPI(ApiBase):
     用于查询集群信息、提交作业、查询作业等操作
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        base_url: str = ApiBase.DEFAULT_BASE_URL,
+        api_version: str = ApiBase.API_VERSION,
+        token: str | None = None,
+    ) -> None:
         """
         初始化作业管理API客户端
 
         Args:
             base_url: API基础URL，默认为示例环境URL
             api_version: API版本，默认为v2
+            token: 默认访问令牌
         """
-        super().__init__(*args, module="job", **kwargs)
+        super().__init__(base_url, api_version, module="job", token=token)
 
     def get_cluster_info(self) -> dict[str, Any]:
         """
@@ -41,7 +45,7 @@ class ScNetJobAPI(ApiBase):
         Raises:
             ApiException: API异常
         """
-        return self.request(uri="cluster", method="get")
+        return self.request(uri="cluster", method="get", operation="获取集群信息")
 
     def get_user_queues(self, scheduler_id: str) -> dict[str, Any]:
         """
@@ -59,9 +63,13 @@ class ScNetJobAPI(ApiBase):
             ApiException: API异常
         """
         params = {"schedulerId": scheduler_id}
-        logger.info(f"正在获取用户可访问队列，调度器ID: {scheduler_id}")
-        response = self.request(uri="scheduler-user/queue", method="get", params=params)
-        return self._process_response(response, "获取用户队列失败")
+        logger.info("正在获取用户可访问队列，调度器 ID={}", scheduler_id)
+        return self.request(
+            uri="scheduler-user/queue",
+            method="get",
+            params=params,
+            operation="获取用户队列",
+        )
 
     def submit_job(self, scheduler_id: str, job_data: dict[str, Any]) -> dict[str, Any]:
         """
@@ -82,8 +90,13 @@ class ScNetJobAPI(ApiBase):
         # 确保作业数据包含调度器ID
         if "schedulerId" not in job_data:
             job_data["schedulerId"] = scheduler_id
-        logger.info(f"正在提交作业，调度器ID: {scheduler_id}")
-        return self.request(uri="job", method="get", json=job_data)
+        logger.info("正在提交作业，调度器 ID={}", scheduler_id)
+        return self.request(
+            uri="job",
+            method="get",
+            json=job_data,
+            operation="提交作业",
+        )
 
     def get_job_detail(self, job_id: str, scheduler_id: str) -> dict[str, Any]:
         """
@@ -103,5 +116,10 @@ class ScNetJobAPI(ApiBase):
             ApiException: API异常
         """
         params = {"jobId": job_id, "schedulerId": scheduler_id}
-        logger.info(f"正在获取作业 {job_id} 详情，调度器ID: {scheduler_id}")
-        return self.request(uri="job/detail", method="get", params=params)
+        logger.info("正在获取作业 {} 详情，调度器 ID={}", job_id, scheduler_id)
+        return self.request(
+            uri="job/detail",
+            method="get",
+            params=params,
+            operation="获取作业详情",
+        )

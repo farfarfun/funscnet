@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
-
 import json
 from typing import Any
 
-import requests
 from farlog import getLogger
 
 from .base import ApiBase
@@ -17,15 +14,21 @@ class ScNetTokenAPI(ApiBase):
     用于获取用户token、集群token和平台token等操作
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        base_url: str = ApiBase.DEFAULT_BASE_URL,
+        api_version: str = ApiBase.API_VERSION,
+        token: str | None = None,
+    ) -> None:
         """
         初始化认证授权API客户端
 
         Args:
             base_url: API基础URL，默认为示例环境URL
             api_version: API版本，默认为v2
+            token: 默认访问令牌
         """
-        super().__init__(*args, module="auth", **kwargs)
+        super().__init__(base_url, api_version, module="auth", token=token)
 
     def get_user_tokens(self, user: str, password: str, org_id: str) -> dict[str, Any]:
         """
@@ -53,11 +56,13 @@ class ScNetTokenAPI(ApiBase):
             "orgid": org_id,
         }
 
-        logger.info(f"正在获取用户 {user} 的访问凭证")
-
-        endpoint = self._get_endpoint("tokens")
-        response = requests.post(endpoint, headers=headers, data=json.dumps({}))
-        return self._process_response(response, "获取访问凭证失败")
+        logger.info("正在获取用户 {} 的访问凭证", user)
+        return self.request(
+            "tokens",
+            headers=headers,
+            data=json.dumps({}),
+            operation="获取访问凭证",
+        )
 
     def get_cluster_tokens(
         self, user: str, password: str, org_id: str
@@ -95,19 +100,17 @@ class ScNetTokenAPI(ApiBase):
         Returns:
             str | None: 如果指定区域存在且用户有权限，返回token字符串；否则返回None
         """
-        logger.info(f"正在获取集群 {cluster_id} 的token")
+        logger.info("正在获取集群 {} 的 token", cluster_id)
         clusters = self.get_cluster_tokens(user, password, org_id)
 
         for cluster in clusters:
             if cluster.get("clusterId") == cluster_id:
                 return cluster.get("token")
 
-        logger.warning(f"未找到集群 {cluster_id} 的token")
+        logger.warning("未找到集群 {} 的 token", cluster_id)
         return None
 
-    def get_platform_token(
-        self, user: str, password: str, org_id: str
-    ) -> str | None:
+    def get_platform_token(self, user: str, password: str, org_id: str) -> str | None:
         """
         API文档: https://www.scnet.cn/ac/openapi/doc/2.0/api/safecertification/get-user-tokens.html
 
@@ -145,6 +148,6 @@ class ScNetTokenAPI(ApiBase):
 
         logger.info("正在获取授权区域信息")
 
-        endpoint = self._get_endpoint("center")
-        response = requests.get(endpoint, headers=headers)
-        return self._process_response(response, "获取授权区域失败")
+        return self.request(
+            "center", method="get", headers=headers, operation="获取授权区域"
+        )

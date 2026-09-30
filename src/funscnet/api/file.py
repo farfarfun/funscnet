@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
-
 import os
-from typing import Any, BinaryIO
+from typing import Any
 
+import requests
 from farlog import getLogger
 
 from funscnet.api.base import ApiBase
@@ -16,19 +15,25 @@ class ScNetFileAPI(ApiBase):
     用于文件列表查询、文件下载等操作
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        base_url: str = ApiBase.DEFAULT_BASE_URL,
+        api_version: str = ApiBase.API_VERSION,
+        token: str | None = None,
+    ) -> None:
         """
         初始化文件API客户端
 
         Args:
             base_url: API基础URL，默认为示例环境URL
             api_version: API版本，默认为v2
+            token: 默认访问令牌
         """
-        super().__init__(module="file", *args, **kwargs)
+        super().__init__(base_url, api_version, module="file", token=token)
 
     def list_files(
         self,
-        path: str = None,
+        path: str | None = None,
         limit: int = 20,
         start: int = 0,
         order: str = "asc",
@@ -55,8 +60,13 @@ class ScNetFileAPI(ApiBase):
         params = {"limit": limit, "start": start, "order": order, "orderBy": order_by}
         if path:
             params["path"] = path
-        logger.info(f"正在获取文件列表，路径: {path}")
-        return self.request(uri="file/list", method="get", params=params)
+        logger.info("正在获取文件列表，路径={}", path)
+        return self.request(
+            uri="file/list",
+            method="get",
+            params=params,
+            operation="查询文件列表",
+        )
 
     def upload_file(
         self, file_path: str, remote_dir: str, cover: str = "uncover"
@@ -84,12 +94,18 @@ class ScNetFileAPI(ApiBase):
         with open(file_path, "rb") as f:
             files = {"file": (file_name, f, "application/octet-stream")}
             data = {"cover": cover, "path": remote_dir}
-            logger.info(f"正在上传文件 {file_name} 到 {remote_dir}")
-            return self.request(uri="upload", method="post", data=data, files=files)
+            logger.info("正在上传文件 {} 到 {}", file_name, remote_dir)
+            return self.request(
+                uri="upload",
+                method="post",
+                data=data,
+                files=files,
+                operation="上传文件",
+            )
 
     def download_file(
         self, path: str, save_path: str | None = None
-    ) -> BinaryIO | str:
+    ) -> requests.Response | str:
         """
         API文档: https://www.scnet.cn/ac/openapi/doc/2.0/api/efile/download.html
 
@@ -98,24 +114,24 @@ class ScNetFileAPI(ApiBase):
         下载文件或文件夹，文件夹会被压缩为zip格式
 
         Args:
-            token: 访问令牌
             path: 要下载的文件路径
             save_path: 保存文件的本地路径，如果为None则返回文件内容
 
         Returns:
-            BinaryIO | str: 如果save_path为None，返回文件内容；否则返回保存的文件路径
+            requests.Response | str: 未指定保存路径时返回响应，否则返回保存路径。
 
         Raises:
             ApiException: API异常
             IOError: 文件保存错误
         """
         params = {"path": path}
-        logger.info(f"正在下载文件 {path}")
+        logger.info("正在下载文件 {}", path)
         response = self.request(
             uri="download",
             method="get",
             params=params,
             stream=True,  # 流式下载，适合大文件
+            operation="下载文件",
         )
 
         # 如果没有指定保存路径，直接返回文件内容
@@ -131,7 +147,7 @@ class ScNetFileAPI(ApiBase):
                 if chunk:
                     f.write(chunk)
 
-        logger.info(f"文件已保存至: {save_path}")
+        logger.info("文件已保存至 {}", save_path)
         return save_path
 
     def download_check(self, paths: list[str]) -> bool:
@@ -152,6 +168,11 @@ class ScNetFileAPI(ApiBase):
             ApiException: API异常
         """
         params = {"paths": ",".join(paths)}
-        logger.info(f"正在检查文件下载权限，路径: {paths}")
-        self.request(uri="download-check", method="get", params=params)
+        logger.info("正在检查文件下载权限，路径={}", paths)
+        self.request(
+            uri="download-check",
+            method="get",
+            params=params,
+            operation="检查文件下载权限",
+        )
         return True
