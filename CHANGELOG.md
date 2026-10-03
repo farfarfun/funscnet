@@ -1,5 +1,14 @@
 # 变更日志
 
+## 未发布
+
+### 修复
+
+- `pyproject.toml` 的 `description` 不再是占位项目名，改为据实描述 ScNet API 客户端功能。
+- README 最小示例改为调用公开接口 `ScNetJobAPI`，不再构造私有方法 `_get_endpoint` 和不可用的
+  `https://example.invalid` 占位地址。
+- `[tool.ruff.lint]` 增加 `ignore = ["PLE1205"]`，消除 ruff 对 farlog `{}` 参数化日志的误报。
+
 ## 1.0.7 - 2026-09-21
 
 ### 新增

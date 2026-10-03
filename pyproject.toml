@@ -1,7 +1,7 @@
 [project]
 name = "funscnet"
 version = "1.0.7"
-description = "funscnet"
+description = "国家超算互联网（scnet.cn）开放平台 API 的 Python 封装，覆盖令牌认证、作业提交与查询、集群信息、容器与文件管理"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
@@ -42,3 +42,8 @@ packages = ["src/funscnet"]
 dev = [
     "pytest>=9.0.3",
 ]
+
+[tool.ruff.lint]
+# farlog 使用 `{}` 占位符做参数化日志，ruff 按 stdlib logging 的 `%s` 语法
+# 误判为“参数过多”，这里关闭该误报规则（参见 farfarfun/todo-list#695）。
+ignore = ["PLE1205"]
