@@ -4,6 +4,24 @@
 
 ## 安装
 
+需要 Python 3.10 或更高版本。
+
+安装已发布版本：
+
+```bash
+pip install funscnet
+```
+
+使用 uv：
+
+```bash
+uv add funscnet
+```
+
+## 本地开发
+
+克隆仓库后使用以下命令创建本地开发环境并安装测试、格式化工具：
+
 ```bash
 uv sync
 ```
@@ -25,10 +43,20 @@ scheduler_id = clusters["data"][0]["id"]
 # 查询当前用户在该调度器下可访问的队列
 queues = api.get_user_queues(scheduler_id)
 print(queues)
+
+# 查询指定作业在该调度器上的实时详情
+job_detail = api.get_job_detail("job-id", scheduler_id)
+print(job_detail)
 ```
 
 没有真实凭据时，可参考 `tests/test_smoke.py` 中对 `requests` 的 mock 用法在本地跑通调用链路。
-测试使用 `uv run pytest`，所有网络请求测试均使用 mock。
+所有网络请求测试均使用 mock。开发环境中可运行以下检查：
+
+```bash
+uv run pytest
+uv run ruff check .
+uv run ruff format --check .
+```
 
 ---
 

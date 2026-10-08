@@ -105,9 +105,8 @@ class ScNetJobAPI(ApiBase):
         查询实时作业详情
 
         Args:
-            token: 访问令牌
             job_id: 作业ID
-            scheduler_id: 调度器ID
+            scheduler_id: 调度器ID，可通过查询集群信息获取
 
         Returns:
             Dict: 作业详情
