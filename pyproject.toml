@@ -41,6 +41,7 @@ packages = ["src/funscnet"]
 [dependency-groups]
 dev = [
     "pytest>=9.0.3",
+    "ruff>=0.14.0",
 ]
 
 [tool.ruff.lint]

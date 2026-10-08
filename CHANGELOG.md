@@ -9,7 +9,7 @@
   `https://example.invalid` 占位地址。
 - `[tool.ruff.lint]` 增加 `ignore = ["PLE1205"]`，消除 ruff 对 farlog `{}` 参数化日志的误报。
 
-## 1.0.7 - 2026-09-21
+## 1.0.7 - 未发布
 
 ### 新增
 
